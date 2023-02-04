@@ -29,8 +29,7 @@ namespace Lesson3API
             try
             {
                 var container = client.GetContainer("beer-db", "beer-container");
-                await container.DeleteItemAsync<Beer>($"{id}", new PartitionKey(id.ToString()));
-                //await documentClient.DeleteDocumentAsync(toDelete.SelfLink, new RequestOptions { PartitionKey = new PartitionKey(id) });
+                await container.DeleteItemAsync<Beer>($"{id}", new PartitionKey(id.ToString()));             
             }
             catch (Exception ex)
             {

@@ -29,8 +29,6 @@ namespace Lesson3API
             log.LogInformation($"Update function has started!");
             var container = client.GetContainer("beer-db", "beer-container");
 
-            
-
             UpdateBeer input;
             var body = await new StreamReader(req.Body).ReadToEndAsync();
 
