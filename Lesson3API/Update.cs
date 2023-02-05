@@ -12,6 +12,8 @@ using System.Linq;
 using Models.Input;
 using System.Text.Json;
 using Microsoft.Azure.Cosmos;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace Lesson3API
 {
@@ -24,19 +26,18 @@ namespace Lesson3API
                 containerName:"beer-container",
                 Connection = "DBConnection")]
                 CosmosClient client,
+            [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
+            BlobContainerClient blobContainer,
             ILogger log)
         {
             log.LogInformation($"Update function has started!");
             var container = client.GetContainer("beer-db", "beer-container");
 
-            
-
             UpdateBeer input;
-            var body = await new StreamReader(req.Body).ReadToEndAsync();
 
             try
             {
-                input = JsonSerializer.Deserialize<UpdateBeer>(body);
+                input = JsonSerializer.Deserialize<UpdateBeer>(req.Form["Body"]);
 
                 var updateOperations = new List<PatchOperation> 
                 {
@@ -48,6 +49,15 @@ namespace Lesson3API
                     id: input.Id.ToString(),
                     partitionKey: new PartitionKey(input.Id.ToString()),
                     patchOperations: updateOperations);
+
+                var file = req.Form.Files["File"];
+                if(file != null )
+                {
+                    var blob = blobContainer.GetBlobClient($"{input.Id}.png");
+                    await blob.DeleteIfExistsAsync();
+                    await blob.UploadAsync(file.OpenReadStream());
+                }
+                
             }
             catch (Exception ex)
             {

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using Models.Output;
 using Models.Input;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Azure.Storage.Blobs;
 
 namespace Lesson3API
 {
@@ -21,15 +23,17 @@ namespace Lesson3API
                 containerName:"beer-container",
                 Connection = "DBConnection")]
                 IAsyncCollector<Beer> output,
+            [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
+            BlobContainerClient blobContainer,
             ILogger log)
         {
             log.LogInformation($"Add function has started!");
-            var body = await new StreamReader(req.Body).ReadToEndAsync();
-            
+            var file = req.Form.Files["File"];
+
             CreateBeer input;
             try
             {
-                input = JsonSerializer.Deserialize<CreateBeer>(body);
+                input = JsonSerializer.Deserialize<CreateBeer>(req.Form["Body"]);
             }
             catch (Exception ex)
             {
@@ -46,6 +50,14 @@ namespace Lesson3API
             };
 
             await output.AddAsync(newBeer);
+
+            if(file != null)
+            {
+                var blob = blobContainer.GetBlobClient($"{newBeer.Id}.png");
+                await blob.UploadAsync(file.OpenReadStream());
+            }
+            
+
             return new OkObjectResult(newBeer);
         }
     }

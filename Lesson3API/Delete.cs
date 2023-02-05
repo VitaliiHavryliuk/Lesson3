@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.Cosmos;
 using Models.Output;
+using Azure.Storage.Blobs;
 
 namespace Lesson3API
 {
@@ -21,6 +22,8 @@ namespace Lesson3API
                 containerName:"beer-container",
                 Connection = "DBConnection")]
                 CosmosClient client,
+            [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
+            BlobContainerClient blobContainer,
             Guid id,
             ILogger log)
         {
@@ -30,6 +33,8 @@ namespace Lesson3API
             {
                 var container = client.GetContainer("beer-db", "beer-container");
                 await container.DeleteItemAsync<Beer>($"{id}", new PartitionKey(id.ToString()));
+                var blob = blobContainer.GetBlobClient($"{id}.png");
+                await blob.DeleteIfExistsAsync();
                 //await documentClient.DeleteDocumentAsync(toDelete.SelfLink, new RequestOptions { PartitionKey = new PartitionKey(id) });
             }
             catch (Exception ex)
