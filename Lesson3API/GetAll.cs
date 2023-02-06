@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using Lesson3API.Entities;
 using Models.Output;
 
 namespace Lesson3API
@@ -21,10 +22,18 @@ namespace Lesson3API
                 Connection = "DBConnection",
                 SqlQuery = "SELECT * FROM c")] IEnumerable<Beer> input,
             ILogger log)
-        {
+     {
             log.LogInformation($"GetAll function has started!");
             log.LogInformation($"{input.Count()} beers received!");
-            var result = input.Where(beer => beer.Email == req.HttpContext?.User?.Identity?.Name);
+            var result = input
+                .Where(beer => beer.Email == req.HttpContext?.User?.Identity?.Name)
+                .Select(beer => new BeerDTO
+                {
+                    Id = beer.Id,
+                    Name = beer.Name,
+                    Email = beer.Email,
+                    Description = beer.Description
+                });
             return new OkObjectResult(result);
         }
     }

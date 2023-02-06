@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.Cosmos;
 using Models.Output;
+using Lesson3API.Entities;
 
 namespace Lesson3API
 {

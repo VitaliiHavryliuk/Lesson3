@@ -1,4 +1,6 @@
-﻿namespace Models.Input
+﻿using Newtonsoft.Json;
+
+namespace Models.Input
 {
     public class CreateBeer
     {

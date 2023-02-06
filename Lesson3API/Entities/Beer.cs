@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
+using System;
 
-namespace Models.Output
+namespace Lesson3API.Entities
 {
     public class Beer
     {
@@ -10,7 +11,7 @@ namespace Models.Output
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("desc")]
+        [JsonProperty("description")]
         public string Description { get; set; }
 
         [JsonProperty("email")]

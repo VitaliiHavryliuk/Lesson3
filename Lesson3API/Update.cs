@@ -10,8 +10,9 @@ using Models.Output;
 using System.Collections.Generic;
 using System.Linq;
 using Models.Input;
-using System.Text.Json;
+using Newtonsoft.Json;
 using Microsoft.Azure.Cosmos;
+using Lesson3API.Entities;
 
 namespace Lesson3API
 {
@@ -31,14 +32,14 @@ namespace Lesson3API
 
             UpdateBeer input;
             var body = await new StreamReader(req.Body).ReadToEndAsync();
-
+            
             try
             {
-                input = JsonSerializer.Deserialize<UpdateBeer>(body);
+                input = JsonConvert.DeserializeObject<UpdateBeer>(body);
 
                 var updateOperations = new List<PatchOperation> 
                 {
-                    PatchOperation.Replace("/desc",$"{input.Description}"),
+                    PatchOperation.Replace("/description",$"{input.Description}"),
                     PatchOperation.Replace("/name", $"{input.Name}")
                 };
 

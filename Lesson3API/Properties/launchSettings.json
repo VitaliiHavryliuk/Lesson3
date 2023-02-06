@@ -2,8 +2,7 @@
   "profiles": {
     "Lesson3API": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7060",
-      "launchBrowser": false
+      "commandLineArgs": "start --cors *"
     }
   }
 }

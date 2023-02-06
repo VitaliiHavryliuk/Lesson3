@@ -6,9 +6,10 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
+using Newtonsoft.Json;
 using Models.Output;
 using Models.Input;
+using Lesson3API.Entities;
 
 namespace Lesson3API
 {
@@ -29,7 +30,7 @@ namespace Lesson3API
             CreateBeer input;
             try
             {
-                input = JsonSerializer.Deserialize<CreateBeer>(body);
+                input = JsonConvert.DeserializeObject<CreateBeer>(body);
             }
             catch (Exception ex)
             {
