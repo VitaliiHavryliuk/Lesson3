@@ -1,23 +1,25 @@
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
 using Lesson3API.Entities;
-using Models.Output;
+using System.Collections.Generic;
 using Azure.Storage.Blobs;
-using System.IO;
+using System.Linq;
+using Models.Output;
 
 namespace Lesson3API
 {
-    public static class GetAll
+    public static class GetById
     {
-        [FunctionName("GetAll")]
+        [FunctionName("GetById")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "{id:guid}")] HttpRequest req, Guid id,
             [CosmosDB(
                 databaseName:"beer-db",
                 containerName:"beer-container",
@@ -26,33 +28,38 @@ namespace Lesson3API
             [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
             BlobContainerClient blobContainer,
             ILogger log)
-     {
-            log.LogInformation($"GetAll function has started!");
-            log.LogInformation($"{input.Count()} beers received!");
+        {
+            log.LogInformation($"GetById function has started!");
+
+
             var result = input
-                .Where(beer => beer.Email == req.HttpContext?.User?.Identity?.Name)
+                .Where(beer => beer.Id == id)
                 .Select(beer => new BeerDTO
                 {
                     Id = beer.Id,
                     Name = beer.Name,
                     Email = beer.Email,
                     Description = beer.Description
-                });
+                })
+                .FirstOrDefault();
 
-            foreach(var beer in result)
+            if (result == null)
             {
-                var blob = blobContainer.GetBlobClient($"{beer.Id}.png");
-                
-                if (blob == null) continue;
+                return new NotFoundObjectResult("Beer not found!");
+            }
 
-                using(var ms = new MemoryStream())
+            var blob = blobContainer.GetBlobClient($"{result.Id}.png");
+
+            if (blob != null)
+            {
+            using (var ms = new MemoryStream())
                 {
                     blob.DownloadTo(ms);
-                    beer.Image = ms.ToArray();
+                    result.Image = ms.ToArray();
                 }
             }
 
             return new OkObjectResult(result);
         }
     }
-} 
+}

@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Models.Output;
 using Models.Input;
 using Lesson3API.Entities;
+using Azure.Storage.Blobs;
 
 namespace Lesson3API
 {
@@ -22,6 +23,8 @@ namespace Lesson3API
                 containerName:"beer-container",
                 Connection = "DBConnection")]
                 IAsyncCollector<Beer> output,
+            [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
+            BlobContainerClient blobContainer,
             ILogger log)
         {
             log.LogInformation($"Add function has started!");
@@ -45,6 +48,12 @@ namespace Lesson3API
                 Email = req.HttpContext?.User?.Identity?.Name,
                 Id = Guid.NewGuid()
             };
+
+            if(input.Image.Length != 0)
+            {
+                var blob = blobContainer.GetBlobClient($"{newBeer.Id}.png");
+                await blob.UploadAsync(new MemoryStream(input.Image));
+            }
 
             await output.AddAsync(newBeer);
             return new OkObjectResult(newBeer);

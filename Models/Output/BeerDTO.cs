@@ -15,5 +15,6 @@ namespace Models.Output
 
         [JsonProperty("email")]
         public string Email { get; set; }
+        public byte[] Image { get; set; }
     }
 }

@@ -13,6 +13,7 @@ using Models.Input;
 using Newtonsoft.Json;
 using Microsoft.Azure.Cosmos;
 using Lesson3API.Entities;
+using Azure.Storage.Blobs;
 
 namespace Lesson3API
 {
@@ -25,6 +26,8 @@ namespace Lesson3API
                 containerName:"beer-container",
                 Connection = "DBConnection")]
                 CosmosClient client,
+            [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
+            BlobContainerClient blobContainer,
             ILogger log)
         {
             log.LogInformation($"Update function has started!");
@@ -47,6 +50,13 @@ namespace Lesson3API
                     id: input.Id.ToString(),
                     partitionKey: new PartitionKey(input.Id.ToString()),
                     patchOperations: updateOperations);
+
+                if(input.Image.Length != 0)
+                {
+                    var blob = blobContainer.GetBlobClient($"{input.Id}.png");
+                    await blob.DeleteIfExistsAsync();
+                    await blob.UploadAsync(new MemoryStream(input.Image));
+                }
             }
             catch (Exception ex)
             {
