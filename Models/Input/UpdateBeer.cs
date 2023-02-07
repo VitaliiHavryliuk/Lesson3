@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-
-namespace Models.Input
+﻿namespace Models.Input
 {
     public class UpdateBeer
     {
