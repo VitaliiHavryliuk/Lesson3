@@ -47,7 +47,15 @@ namespace Lesson3API
 
                 using(var ms = new MemoryStream())
                 {
-                    blob.DownloadTo(ms);
+                    try
+                    {
+                        blob.DownloadTo(ms);
+                    }
+                    catch 
+                    {
+
+                    }
+                    
                     beer.Image = ms.ToArray();
                 }
             }

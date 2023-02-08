@@ -52,9 +52,16 @@ namespace Lesson3API
 
             if (blob != null)
             {
-            using (var ms = new MemoryStream())
+                using (var ms = new MemoryStream())
                 {
-                    blob.DownloadTo(ms);
+                    try
+                    {
+                        blob.DownloadTo(ms);
+                    }
+                    catch (Exception)
+                    {
+                    }
+
                     result.Image = ms.ToArray();
                 }
             }

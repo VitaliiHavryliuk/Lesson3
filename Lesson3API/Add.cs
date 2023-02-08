@@ -18,7 +18,7 @@ namespace Lesson3API
     {
         [FunctionName("Add")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", "options", Route = null)] HttpRequest req,
             [CosmosDB(databaseName:"beer-db",
                 containerName:"beer-container",
                 Connection = "DBConnection")]
