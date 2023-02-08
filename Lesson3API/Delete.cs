@@ -17,7 +17,7 @@ namespace Lesson3API
     {
         [FunctionName("Delete")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "{id:guid}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", "options", Route = "{id:guid}")] HttpRequest req,
             [CosmosDB(databaseName:"beer-db",
                 containerName:"beer-container",
                 Connection = "DBConnection")]
