@@ -18,14 +18,14 @@ namespace Lesson3API
     {
         [FunctionName("Delete")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", "options", Route = "{id:guid}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", "options", Route = "Delete/{id:guid}")] HttpRequest req,
             [CosmosDB(databaseName:"beer-db",
                 containerName:"beer-container",
                 Connection = "DBConnection")]
-                CosmosClient client,
-             [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
-            BlobContainerClient blobContainer,
+            CosmosClient client,            
             Guid id,
+            [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
+            BlobContainerClient blobContainer,
             ILogger log)
         {
             log.LogInformation($"Delete function has started!");
@@ -34,8 +34,7 @@ namespace Lesson3API
             {
                 var container = client.GetContainer("beer-db", "beer-container");
                 await container.DeleteItemAsync<Beer>($"{id}", new PartitionKey(id.ToString()));
-                var blob = blobContainer.GetBlobClient($"{id}.png");
-                await blob.DeleteIfExistsAsync();
+                await blobContainer.DeleteBlobIfExistsAsync($"{id}.png");
             }
             catch (Exception ex)
             {

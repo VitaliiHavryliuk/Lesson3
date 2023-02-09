@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json;
-
-namespace Models.Input
+﻿namespace Models.Input
 {
     public class CreateBeer
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public byte[] Image { get; set; }
     }
 }

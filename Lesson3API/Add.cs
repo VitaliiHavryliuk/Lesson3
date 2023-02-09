@@ -49,12 +49,6 @@ namespace Lesson3API
                 Id = Guid.NewGuid()
             };
 
-            if(input.Image.Length != 0)
-            {
-                var blob = blobContainer.GetBlobClient($"{newBeer.Id}.png");
-                await blob.UploadAsync(new MemoryStream(input.Image));
-            }
-
             await output.AddAsync(newBeer);
             return new OkObjectResult(newBeer);
         }

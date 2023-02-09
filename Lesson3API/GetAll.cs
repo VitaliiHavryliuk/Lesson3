@@ -26,7 +26,7 @@ namespace Lesson3API
             [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
             BlobContainerClient blobContainer,
             ILogger log)
-     {
+        {
             log.LogInformation($"GetAll function has started!");
             log.LogInformation($"{input.Count()} beers received!");
             var result = input
@@ -38,27 +38,6 @@ namespace Lesson3API
                     Email = beer.Email,
                     Description = beer.Description
                 });
-
-            foreach(var beer in result)
-            {
-                var blob = blobContainer.GetBlobClient($"{beer.Id}.png");
-                
-                if (blob == null) continue;
-
-                using(var ms = new MemoryStream())
-                {
-                    try
-                    {
-                        blob.DownloadTo(ms);
-                    }
-                    catch 
-                    {
-
-                    }
-                    
-                    beer.Image = ms.ToArray();
-                }
-            }
 
             return new OkObjectResult(result);
         }
