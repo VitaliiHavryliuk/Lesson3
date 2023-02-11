@@ -10,6 +10,11 @@ using Lesson3API.Entities;
 using Models.Output;
 using Azure.Storage.Blobs;
 using System.IO;
+using System.Security.Claims;
+using Microsoft.Extensions.Primitives;
+using System.IdentityModel.Tokens.Jwt;
+using System;
+using System.Text.Json;
 
 namespace Lesson3API
 {
@@ -29,8 +34,12 @@ namespace Lesson3API
         {
             log.LogInformation($"GetAll function has started!");
             log.LogInformation($"{input.Count()} beers received!");
+
+            string email;
+            if(!Utils.TryGetEmailFromRequest(req, out email)) return new UnauthorizedResult();
+
             var result = input
-                .Where(beer => beer.Email == req.HttpContext?.User?.Identity?.Name)
+                .Where(beer => beer.Email == email)
                 .Select(beer => new BeerDTO
                 {
                     Id = beer.Id,
@@ -38,7 +47,6 @@ namespace Lesson3API
                     Email = beer.Email,
                     Description = beer.Description
                 });
-
             return new OkObjectResult(result);
         }
     }

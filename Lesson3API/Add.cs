@@ -23,8 +23,6 @@ namespace Lesson3API
                 containerName:"beer-container",
                 Connection = "DBConnection")]
                 IAsyncCollector<Beer> output,
-            [Blob("vhavryliuk-blob-container", Connection = "AzureWebJobsStorage")]
-            BlobContainerClient blobContainer,
             ILogger log)
         {
             log.LogInformation($"Add function has started!");
@@ -41,14 +39,17 @@ namespace Lesson3API
                 return new BadRequestObjectResult(ex);
             }
 
+            string email;
+            if(!Utils.TryGetEmailFromRequest(req, out email)) return new UnauthorizedResult();
+
             var newBeer = new Beer
             {
                 Description = input.Description,
                 Name = input.Name,
-                Email = req.HttpContext?.User?.Identity?.Name,
+                Email = email,
                 Id = Guid.NewGuid()
             };
-
+            
             await output.AddAsync(newBeer);
             return new OkObjectResult(newBeer);
         }
