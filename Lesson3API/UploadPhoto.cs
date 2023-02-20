@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Azure.Storage.Blobs;
 using System.Linq;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace Lesson3API
 {
@@ -29,7 +32,16 @@ namespace Lesson3API
             var blob = blobContainer.GetBlobClient($"{id}.png");
 
             await blob.DeleteIfExistsAsync();
-            await blob.UploadAsync(file.OpenReadStream());
+
+            Image img = Image.FromStream(file.OpenReadStream());
+            var thumb = img.GetThumbnailImage(300, 600, () => false, IntPtr.Zero);
+            using (var stream = new MemoryStream())
+            {
+                thumb.Save(stream, ImageFormat.Png);
+                stream.Position = 0;
+                await blob.UploadAsync(stream);
+            }
+            
 
             return new OkResult();
         }
